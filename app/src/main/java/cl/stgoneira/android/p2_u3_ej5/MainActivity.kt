@@ -27,40 +27,53 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
+import cl.stgoneira.android.p2_u3_ej5.data.Gasto
 import cl.stgoneira.android.p2_u3_ej5.domain.FormatCurrencyUseCase
 import cl.stgoneira.android.p2_u3_ej5.domain.FormatDateUseCase
+import kotlinx.coroutines.launch
 import java.time.LocalDate
+import cl.stgoneira.android.p2_u3_ej5.data.GastoRepository
+import cl.stgoneira.android.p2_u3_ej5.data.TipoGasto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var gastoRepository:GastoRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        gastoRepository = GastoRepository.getInstance(this)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            gastosDePrueba().forEach {
+                gastoRepository.agregar(
+                    it
+                )
+            }
+        }
+
         setContent {
             AppGastos()
         }
     }
-}
-
-data class Gasto(
-    val id:Int,
-    val monto:Int,
-    val fecha:LocalDate,
-    val categoria:String,
-    val descripcion:String
-)
-
-enum class TipoGasto {
-    SALUD,
-    COMIDA,
-    DIVERSION
 }
 
 fun gastosDePrueba():List<Gasto> {
@@ -74,6 +87,17 @@ fun gastosDePrueba():List<Gasto> {
 @Preview(showSystemUi = true)
 @Composable
 fun AppGastos() {
+    val contexto = LocalContext.current
+    var gastos by remember {
+        mutableStateOf( emptyList<Gasto>() )
+    }
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            gastos = GastoRepository.getInstance(contexto).obtenerTodos()
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { /*TODO*/ }) {
@@ -87,7 +111,7 @@ fun AppGastos() {
                 .fillMaxSize()
                 .padding(horizontal = innerPadding.calculateLeftPadding(LayoutDirection.Ltr))
         ) {
-            ListaGastosUI(gastosDePrueba())
+            ListaGastosUI(gastos)
         }
     }
 }
