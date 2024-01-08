@@ -14,11 +14,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cl.stgoneira.android.p2_u3_ej5.domain.FormatCurrencyUseCase
@@ -67,12 +74,36 @@ fun gastosDePrueba():List<Gasto> {
 @Preview(showSystemUi = true)
 @Composable
 fun AppGastos() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp)
-    ) {
-        ListaGastosUI(gastosDePrueba())
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar")
+            }
+        },
+        modifier = Modifier.padding(horizontal = 10.dp)
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = innerPadding.calculateLeftPadding(LayoutDirection.Ltr))
+        ) {
+            ListaGastosUI(gastosDePrueba())
+        }
+    }
+}
+
+@Composable
+fun IconoGasto(gasto: Gasto) {
+    when(TipoGasto.valueOf(gasto.categoria)) {
+        TipoGasto.DIVERSION -> Icon(
+            imageVector = Icons.Filled.Face,
+            contentDescription = TipoGasto.DIVERSION.toString())
+        TipoGasto.SALUD -> Icon(
+            imageVector = Icons.Filled.Favorite,
+            contentDescription = TipoGasto.SALUD.toString())
+        TipoGasto.COMIDA -> Icon(
+            imageVector = Icons.Filled.Home,
+            contentDescription = TipoGasto.SALUD.toString())
     }
 }
 
@@ -96,6 +127,8 @@ fun ListaGastosUI(
                             fontSize = 10.sp
                         )
                     )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    IconoGasto(it)
                     Spacer(modifier = Modifier.width(10.dp))
                     Column() {
                         Text(it.descripcion)
