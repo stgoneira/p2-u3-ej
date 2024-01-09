@@ -16,9 +16,21 @@ class GastoRepository(
         @Volatile
         private var instance: GastoRepository? = null
 
-        fun getInstance(contexto: Context):GastoRepository {
+        fun getInstance(contexto:Context):GastoRepository {
+            return getInstanceDSDbHelper(contexto)
+        }
+
+        fun getInstanceDSDbHelper(contexto:Context):GastoRepository {
             return instance ?: synchronized(this) {
-                instance ?: GastoRepository(
+                GastoRepository(
+                    GastoDaoDbHelperImp(contexto)
+                )
+            }
+        }
+
+        fun getInstanceDSRoom(contexto: Context):GastoRepository {
+            return instance ?: synchronized(this) {
+                GastoRepository(
                     Room.databaseBuilder(
                         contexto.applicationContext,
                         AppDatabase::class.java,

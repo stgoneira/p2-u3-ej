@@ -78,9 +78,9 @@ class MainActivity : ComponentActivity() {
 
 fun gastosDePrueba():List<Gasto> {
     return listOf(
-        Gasto(1, 100_000, LocalDate.now(), TipoGasto.COMIDA.toString(), "Supermercado"),
-        Gasto(2, 30_000, LocalDate.now(), TipoGasto.SALUD.toString(), "Veterinario"),
-        Gasto(3, 40_000, LocalDate.now(), TipoGasto.DIVERSION.toString(), "Salida fin de semana"),
+        Gasto(1, 150_000, LocalDate.now(), TipoGasto.COMIDA.toString(), "Supermercado"),
+        Gasto(2, 30_000, LocalDate.now(), TipoGasto.SALUD.toString(), "Veterinario Sta María"),
+        Gasto(3, 40_000, LocalDate.now(), TipoGasto.DIVERSION.toString(), "Salida a comer"),
     )
 }
 
